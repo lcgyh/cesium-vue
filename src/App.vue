@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <DfCesium />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import DfCesium from './components/CesiumExample/No01-init.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    DfCesium
   }
 }
 </script>
