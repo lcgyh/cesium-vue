@@ -1,7 +1,7 @@
 export class Task {
-    constructor(age) {
+    constructor() {
         // eslint-disable-next-line constructor-super
-        super(age);
+       
         this.task = null
 
     }

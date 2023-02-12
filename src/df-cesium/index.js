@@ -1,11 +1,16 @@
 // Dfcesium - 地图工作台调用的类方法
 import { ShapeList } from '../shape/index'
 import { Task } from '../task/index'
+import {getImageryProviderViewModels} from './map-data/index'
 export class Dfcesium {
     constructor(age) {
+        const mapType = age.mapType
+        const options = age.options
+        if (mapType !== 'PRIVATEMAP') {
+            options.imageryProviderViewModels = getImageryProviderViewModels(mapType)
+        } 
         // eslint-disable-next-line constructor-super
-        super(age);
-        this.viewer = this.initDfcesium(age.container,age.options)
+        this.viewer = this.initDfcesium(age.container, options)
         this.task = new Task() //执行中的任务
         this.selectShape = null // 当权选中的设备
         this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
@@ -20,7 +25,7 @@ export class Dfcesium {
     // 初始化地图
     initDfcesium(container,options ) {
         const viewer = new Cesium.Viewer(container, options);
-        // viewer的其他设置
+        viewer._cesiumWidget._creditContainer.style.display = "none";
         return viewer
     }
 
@@ -40,26 +45,26 @@ export class Dfcesium {
 
     // 初始化监听事件
     initHandler() {
-        // const _this = this;
+        const _this = this;
         // 鼠标左键按下事件
         this.handler.setInputAction(function (event) {
-            console.log("event-LEFT_DOWN", event);
+            // console.log("event-LEFT_DOWN", event);
 
-            this.handlerCallBack(event)
+            _this.handlerCallBack('LEFT_DOWN',{e:event})
         }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
         // 鼠标移动事件
         this.handler.setInputAction(function (event) {
-            console.log("event-MOUSE_MOVE", event);
+            // console.log("event-MOUSE_MOVE", event);
 
-            this.handlerCallBack(event)
+            _this.handlerCallBack('MOUSE_MOVE',{e:event})
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
         // 鼠标松开事件
         this.handler.setInputAction(function (event) {
-            console.log("event-LEFT_UP", event);
+            // console.log("event-LEFT_UP", event);
 
-            this.handlerCallBack(event)
+            _this.handlerCallBack('LEFT_UP',{e:event})
 
         }, Cesium.ScreenSpaceEventType.LEFT_UP);
 
@@ -67,11 +72,11 @@ export class Dfcesium {
     }
 
     // 无感定位
-    setPositionViewer() {
+    setPositionViewer(local) {
         this.viewer.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(-117.16, 32.71, 15000.0),
+            destination: Cesium.Cartesian3.fromDegrees(local.longitude, local.latitude, local.height),
             orientation: {
-                heading: Cesium.Math.toRadians(90.0), // east, default value is 0.0 (north)
+                heading: Cesium.Math.toRadians(0), // east, default value is 0.0 (north)
                 pitch: Cesium.Math.toRadians(-90),    // default value (looking down)
                 roll: 0.0                             // default value
             }
@@ -80,9 +85,9 @@ export class Dfcesium {
 
 
     // 飞行定位
-    setPositionByFly() {
+    setPositionByFly(local) {
         this.viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(-117.16, 32.71, 15000.0)
+            destination: Cesium.Cartesian3.fromDegrees(local.longitude, local.latitude, local.height)
         })
     }
 }
